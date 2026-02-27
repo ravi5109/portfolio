@@ -1,0 +1,40 @@
+# HOW TO PUT THIS PORTFOLIO ON GITHUB & GO LIVE
+# ================================================
+# Your GitHub: https://github.com/ravi5109
+# Repo: https://github.com/ravi5109/portfolio
+# Live URL after setup: https://ravi5109.github.io/portfolio
+
+## OPTION A — Upload directly (no coding needed, easiest)
+# -------------------------------------------------------
+1. Go to https://github.com/ravi5109/portfolio
+2. Click "Add file" → "Upload files"
+3. Drag and drop index.html into the box
+4. Also drag your Servicenow_Developer.pdf
+5. Scroll down → click "Commit changes"
+6. Go to Settings → Pages → Source: "Deploy from branch" → Branch: main → Folder: / (root)
+7. Click Save → Wait 2 minutes
+8. Your site is live at: https://ravi5109.github.io/portfolio
+
+
+## OPTION B — Using Git on your computer
+# ----------------------------------------
+# Step 1: Install Git from https://git-scm.com/downloads
+
+# Step 2: Open terminal / command prompt and run:
+git clone https://github.com/ravi5109/portfolio.git
+cd portfolio
+
+# Step 3: Copy index.html and Servicenow_Developer.pdf into this folder
+
+# Step 4: Push to GitHub
+git add .
+git commit -m "Add dynamic ServiceNow portfolio"
+git push origin main
+
+# Step 5: Enable GitHub Pages
+# Go to: https://github.com/ravi5109/portfolio/settings/pages
+# Source: Deploy from a branch
+# Branch: main | Folder: / (root)
+# Click Save
+
+# Your live URL: https://ravi5109.github.io/portfolio

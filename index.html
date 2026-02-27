@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ravi Shankar Gupta — ServiceNow Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+/* =============================================
+   SERVICENOW BRAND DESIGN SYSTEM
+   Primary Dark: #293E40
+   Primary Light: #81B5A1
+   Accent: #5B9E8F
+   Background: #0F1A1B
+   Surface: #172122
+   Card: #1E2D2F
+============================================= */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sn-dark:     #293E40;
+  --sn-mid:      #3D5C5E;
+  --sn-light:    #81B5A1;
+  --sn-accent:   #5B9E8F;
+  --sn-bright:   #9ECFBD;
+  --bg:          #0F1A1B;
+  --surface:     #172122;
+  --card:        #1E2D2F;
+  --card-hover:  #243436;
+  --border:      rgba(129,181,161,0.15);
+  --border-bright: rgba(129,181,161,0.35);
+  --text:        #C8DDD8;
+  --text-muted:  #7A9B95;
+  --heading:     #E8F4F0;
+  --white:       #F0F8F5;
+  --font:        'Inter', sans-serif;
+  --mono:        'Fira Code', monospace;
+  --radius:      12px;
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow:      0 4px 24px rgba(0,0,0,0.4);
+  --glow:        0 0 30px rgba(91,158,143,0.2);
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--sn-mid); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sn-light); }
+
+/* Selection */
+::selection { background: rgba(91,158,143,0.3); color: var(--white); }
+
+/* =============================================
+   LOADER
+============================================= */
+#loader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 20px;
+}
+.loader-logo {
+  width: 70px; height: 70px;
+  background: var(--sn-dark);
+  border: 2px solid var(--sn-light);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  animation: loaderPulse 1.2s ease-in-out infinite;
+}
+@keyframes loaderPulse { 0%,100%{box-shadow:0 0 0 0 rgba(129,181,161,0.4);} 50%{box-shadow:0 0 0 16px rgba(129,181,161,0);} }
+.loader-bar {
+  width: 200px; height: 3px;
+  background: rgba(129,181,161,0.15);
+  border-radius: 2px; overflow: hidden;
+}
+.loader-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sn-accent), var(--sn-bright));
+  animation: loaderFill 1.6s ease-in-out forwards;
+  width: 0%;
+}
+@keyframes loaderFill { 0%{width:0%} 60%{width:80%} 100%{width:100%} }
+.loader-text {
+  font-family: var(--mono);
+  font-size: 12px; color: var(--sn-light);
+  letter-spacing: 2px;
+}
+
+/* =============================================
+   CURSOR
+============================================= */
+.cursor {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--sn-light);
+  position: fixed; z-index: 9998;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(129,181,161,0.5);
+  position: fixed; z-index: 9997;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+}
+.cursor.hover { width: 20px; height: 20px; }
+.cursor-ring.hover { width: 56px; height: 56px; border-color: var(--sn-light); }
+
+/* =============================================
+   BACKGROUND PARTICLES
+============================================= */
+#particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+/* =============================================
+   NAV
+============================================= */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 5%;
+  background: rgba(15,26,27,0.9);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s var(--ease);
+}
+#navbar.scrolled {
+  height: 56px;
+  background: rgba(15,26,27,0.98);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.nav-brand-icon {
+  width: 36px; height: 36px;
+  background: var(--sn-dark);
+  border: 1px solid var(--border-bright);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s;
+}
+.nav-brand:hover .nav-brand-icon { background: var(--sn-mid); box-shadow: var(--glow); }
+.nav-brand-text {
+  font-size: 17px; font-weight: 800;
+  color: var(--heading); letter-spacing: -0.3px;
+}
+.nav-brand-text span { color: var(--sn-light); }
+
+.nav-menu {
+  display: flex; align-items: center; gap: 6px;
+  list-style: none;
+}
+.nav-menu a {
+  padding: 7px 14px; border-radius: 8px;
+  color: var(--text-muted); text-decoration: none;
+  font-size: 14px; font-weight: 500;
+  transition: all 0.2s;
+  position: relative;
+}
+.nav-menu a::after {
+  content: '';
+  position: absolute; bottom: 3px; left: 14px; right: 14px;
+  height: 2px; background: var(--sn-light);
+  border-radius: 1px;
+  transform: scaleX(0); transition: transform 0.2s var(--ease);
+}
+.nav-menu a:hover { color: var(--sn-bright); background: rgba(129,181,161,0.07); }
+.nav-menu a:hover::after, .nav-menu a.active::after { transform: scaleX(1); }
+.nav-menu a.active { color: var(--sn-light); }
+
+.nav-cta {
+  padding: 8px 20px !important;
+  background: var(--sn-dark) !important;
+  border: 1px solid var(--sn-light) !important;
+  color: var(--sn-light) !important;
+  border-radius: 8px !important; font-weight: 600 !important;
+  transition: all 0.2s !important;
+}
+.nav-cta:hover { background: var(--sn-mid) !important; box-shadow: var(--glow) !important; color: var(--white) !important; }
+.nav-cta::after { display: none !important; }
+
+/* Hamburger */
+.nav-ham {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
+.nav-ham span {
+  width: 24px; height: 2px;
+  background: var(--sn-light);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.nav-ham.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-ham.open span:nth-child(2) { opacity: 0; }
+.nav-ham.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  position: fixed; top: 64px; left: 0; right: 0;
+  background: rgba(15,26,27,0.98);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 5% 20px;
+  flex-direction: column; gap: 4px;
+  z-index: 99;
+  transform: translateY(-20px);
+  opacity: 0; transition: all 0.3s var(--ease);
+}
+.mobile-menu.open { transform: translateY(0); opacity: 1; }
+.mobile-menu a {
+  padding: 10px 16px; border-radius: 8px;
+  color: var(--text); text-decoration: none;
+  font-size: 15px; font-weight: 500;
+  transition: all 0.2s;
+}
+.mobile-menu a:hover { background: rgba(129,181,161,0.08); color: var(--sn-light); }
+
+/* =============================================
+   SECTIONS BASE
+============================================= */
+section {
+  position: relative; z-index: 1;
+  padding: 100px 5%;
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--sn-light); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--sn-light);
+}
+.section-title {
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 800; color: var(--heading);
+  line-height: 1.15; letter-spacing: -1px;
+  margin-bottom: 12px;
+}
+.section-desc {
+  color: var(--text-muted); font-size: 16px;
+  max-width: 560px; line-height: 1.75; margin-bottom: 56px;
+}
+
+/* =============================================
+   HERO
+============================================= */
+#home {
+  min-height: 100vh; padding: 0 5%;
+  display: flex; align-items: center;
+  overflow: hidden;
+}
+
+/* Animated grid */
+.hero-grid-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(129,181,161,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(129,181,161,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: gridShift 20s linear infinite;
+}
+@keyframes gridShift { 0%{background-position:0 0;} 100%{background-position:48px 48px;} }
+
+/* Radial glow */
+.hero-glow {
+  position: absolute; z-index: 0;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(91,158,143,0.12) 0%, transparent 70%);
+  top: 50%; left: 55%; transform: translate(-50%,-50%);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse { 0%,100%{opacity:0.6;transform:translate(-50%,-50%) scale(1);} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.1);} }
+
+.hero-content { position: relative; z-index: 2; max-width: 700px; padding-top: 64px; }
+
+/* Status badge */
+.hero-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(41,62,64,0.8);
+  border: 1px solid var(--border-bright);
+  border-radius: 100px;
+  padding: 7px 18px; margin-bottom: 32px;
+  font-family: var(--mono); font-size: 12px;
+  color: var(--sn-light); letter-spacing: 1.5px;
+  animation: fadeSlideDown 0.8s var(--ease) 1.8s both;
+}
+@keyframes fadeSlideDown { from{opacity:0;transform:translateY(-12px);} to{opacity:1;transform:translateY(0);} }
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--sn-light);
+  box-shadow: 0 0 8px var(--sn-light);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+/* Name */
+.hero-name {
+  font-size: clamp(44px, 7vw, 80px);
+  font-weight: 900; color: var(--heading);
+  line-height: 1.05; letter-spacing: -2.5px;
+  margin-bottom: 8px;
+  animation: fadeSlideUp 0.8s var(--ease) 2s both;
+}
+@keyframes fadeSlideUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+
+.hero-name .highlight { color: var(--sn-light); }
+
+/* Typing effect */
+.hero-typing-wrap {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 24px;
+  animation: fadeSlideUp 0.8s var(--ease) 2.2s both;
+}
+.hero-typing-prefix {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 500; color: var(--text-muted);
+}
+.hero-typing {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 700; color: var(--sn-bright);
+  font-family: var(--mono);
+  border-right: 3px solid var(--sn-light);
+  animation: blink 0.8s step-end infinite;
+  white-space: nowrap; overflow: hidden;
+}
+@keyframes blink { 0%,100%{border-color:var(--sn-light);} 50%{border-color:transparent;} }
+
+/* Tags */
+.hero-tags {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 28px;
+  animation: fadeSlideUp 0.8s var(--ease) 2.4s both;
+}
+.hero-tag {
+  padding: 5px 14px; border-radius: 6px;
+  background: rgba(41,62,64,0.6);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px; color: var(--sn-light);
+  letter-spacing: 1px;
+}
+
+.hero-desc {
+  font-size: 17px; color: var(--text);
+  max-width: 540px; line-height: 1.8;
+  margin-bottom: 40px;
+  animation: fadeSlideUp 0.8s var(--ease) 2.5s both;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  animation: fadeSlideUp 0.8s var(--ease) 2.6s both;
+}
+.btn {
+  padding: 13px 28px; border-radius: var(--radius);
+  font-size: 14px; font-weight: 600;
+  text-decoration: none; letter-spacing: 0.3px;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.25s var(--ease);
+  cursor: pointer; border: none;
+}
+.btn-primary {
+  background: var(--sn-light);
+  color: var(--bg);
+  box-shadow: 0 0 28px rgba(129,181,161,0.3);
+}
+.btn-primary:hover { background: var(--sn-bright); box-shadow: 0 0 40px rgba(129,181,161,0.5); transform: translateY(-2px); }
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-bright) !important;
+  color: var(--text);
+}
+.btn-outline:hover { border-color: var(--sn-light) !important; color: var(--sn-light); background: rgba(129,181,161,0.06); transform: translateY(-2px); }
+
+/* Hero right — floating stats */
+.hero-right {
+  position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+  z-index: 2; display: flex; flex-direction: column; gap: 16px;
+  animation: fadeSlideUp 1s var(--ease) 2.8s both;
+}
+.stat-float {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 26px;
+  min-width: 140px; text-align: center;
+  position: relative; overflow: hidden;
+  transition: all 0.3s;
+}
+.stat-float::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--sn-light);
+}
+.stat-float:hover { border-color: var(--border-bright); transform: translateX(-4px); box-shadow: var(--shadow); }
+.stat-number {
+  font-size: 36px; font-weight: 900;
+  color: var(--sn-light); line-height: 1;
+  font-family: var(--mono);
+}
+.stat-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: fadeSlideUp 1s var(--ease) 3.2s both;
+}
+.scroll-mouse {
+  width: 24px; height: 38px;
+  border: 2px solid var(--border-bright); border-radius: 12px;
+  display: flex; justify-content: center; padding-top: 6px;
+}
+.scroll-wheel {
+  width: 4px; height: 8px;
+  background: var(--sn-light); border-radius: 2px;
+  animation: scrollWheel 1.8s ease-in-out infinite;
+}
+@keyframes scrollWheel { 0%{transform:translateY(0);opacity:1;} 100%{transform:translateY(12px);opacity:0;} }
+.scroll-text { font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 2px; }
+
+/* =============================================
+   ABOUT
+============================================= */
+#about { background: var(--surface); }
+
+.about-grid {
+  display: grid; grid-template-columns: 1.1fr 0.9fr;
+  gap: 60px; align-items: start;
+}
+
+.about-text p {
+  font-size: 16px; color: var(--text);
+  line-height: 1.85; margin-bottom: 18px;
+}
+.about-text strong { color: var(--heading); font-weight: 600; }
+
+.about-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-top: 28px;
+}
+.meta-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.meta-icon { font-size: 20px; flex-shrink: 0; }
+.meta-key { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; font-family: var(--mono); }
+.meta-val { font-size: 13px; color: var(--heading); font-weight: 500; margin-top: 2px; }
+
+.about-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+.timeline-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: relative; overflow: hidden;
+}
+.timeline-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--sn-light), transparent);
+}
+.tc-company {
+  font-size: 16px; font-weight: 700; color: var(--heading);
+  margin-bottom: 4px;
+}
+.tc-role { font-size: 14px; color: var(--sn-light); font-weight: 600; }
+.tc-period {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-muted); margin-top: 6px;
+}
+.tc-location { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+.certs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cert-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.cert-card:hover { border-color: var(--border-bright); transform: translateY(-3px); }
+.cert-emoji { font-size: 28px; margin-bottom: 8px; display: block; }
+.cert-name { font-size: 13px; font-weight: 600; color: var(--heading); }
+.cert-org { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+/* =============================================
+   SKILLS — No levels, just pills
+============================================= */
+#skills { background: var(--bg); }
+
+.skills-filter {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 36px;
+}
+.filter-btn {
+  padding: 6px 16px; border-radius: 100px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px; font-family: var(--mono);
+  cursor: pointer; transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active {
+  background: rgba(129,181,161,0.1);
+  border-color: var(--sn-light);
+  color: var(--sn-light);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+.skill-group {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  transition: all 0.3s var(--ease);
+  opacity: 1;
+}
+.skill-group.hidden { display: none; }
+.skill-group:hover { border-color: var(--border-bright); transform: translateY(-3px); box-shadow: var(--shadow); }
+
+.sg-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.sg-icon {
+  width: 36px; height: 36px;
+  background: rgba(41,62,64,0.8);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.sg-title {
+  font-size: 14px; font-weight: 700;
+  color: var(--heading);
+}
+.sg-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+.sg-pill {
+  padding: 4px 12px; border-radius: 100px;
+  background: rgba(41,62,64,0.5);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px; color: var(--text);
+  transition: all 0.2s;
+  cursor: default;
+}
+.sg-pill:hover { background: rgba(91,158,143,0.15); border-color: var(--sn-light); color: var(--sn-bright); }
+
+/* =============================================
+   PROJECTS
+============================================= */
+#projects { background: var(--surface); }
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 22px;
+}
+.project-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex; flex-direction: column;
+  text-decoration: none;
+  transition: all 0.3s var(--ease);
+  position: relative; overflow: hidden;
+  group: true;
+}
+.project-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--sn-accent), var(--sn-bright));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s var(--ease);
+}
+.project-card:hover { border-color: var(--border-bright); transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+.project-card:hover::before { transform: scaleX(1); }
+
+.pc-num {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--sn-accent); letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+.pc-title {
+  font-size: 18px; font-weight: 700;
+  color: var(--heading); margin-bottom: 12px; line-height: 1.3;
+  transition: color 0.2s;
+}
+.project-card:hover .pc-title { color: var(--sn-light); }
+.pc-desc {
+  font-size: 14px; color: var(--text-muted);
+  line-height: 1.75; margin-bottom: 20px; flex: 1;
+}
+.pc-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+.pc-tag {
+  padding: 3px 10px; border-radius: 4px;
+  background: rgba(41,62,64,0.7);
+  border: 1px solid var(--border);
+  font-family: var(--mono); font-size: 10px;
+  color: var(--sn-light);
+}
+.pc-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-family: var(--mono);
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+.project-card:hover .pc-link { color: var(--sn-light); }
+.pc-link svg { width: 14px; height: 14px; }
+
+/* =============================================
+   CONTACT — Clean fix
+============================================= */
+#contact { background: var(--bg); }
+
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 40px; align-items: start;
+}
+
+.contact-channels { display: flex; flex-direction: column; gap: 14px; }
+.contact-link {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  text-decoration: none;
+  transition: all 0.25s var(--ease);
+}
+.contact-link:hover { border-color: var(--border-bright); transform: translateX(6px); }
+.cl-icon {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: rgba(41,62,64,0.8);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  transition: all 0.25s;
+}
+.contact-link:hover .cl-icon { background: rgba(41,62,64,1); border-color: var(--sn-light); }
+.cl-body { flex: 1; }
+.cl-label { font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
+.cl-value { font-size: 15px; color: var(--heading); font-weight: 500; }
+.cl-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.cl-arrow { color: var(--text-muted); font-size: 18px; transition: transform 0.2s; }
+.contact-link:hover .cl-arrow { transform: translateX(4px); color: var(--sn-light); }
+
+.contact-right { display: flex; flex-direction: column; gap: 20px; }
+
+/* Availability card — Permanent + Full-Time only */
+.availability-card {
+  background: var(--card);
+  border: 1px solid rgba(129,181,161,0.25);
+  border-radius: var(--radius);
+  padding: 28px;
+  position: relative; overflow: hidden;
+}
+.availability-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--sn-accent), var(--sn-bright));
+}
+.avail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.avail-pulse {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sn-light);
+  box-shadow: 0 0 10px rgba(129,181,161,0.6);
+  animation: pulse 2s ease-in-out infinite;
+}
+.avail-title { font-size: 17px; font-weight: 700; color: var(--heading); }
+.avail-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.avail-item {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 15px; color: var(--text);
+}
+.avail-check {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: rgba(129,181,161,0.12);
+  border: 1px solid rgba(129,181,161,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--sn-light);
+  flex-shrink: 0;
+}
+.avail-note { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+/* Resume card */
+.resume-card {
+  background: linear-gradient(135deg, rgba(41,62,64,0.8), rgba(30,45,47,0.6));
+  border: 1px solid rgba(129,181,161,0.2);
+  border-radius: var(--radius);
+  padding: 28px; text-align: center;
+}
+.rc-icon { font-size: 40px; margin-bottom: 14px; }
+.rc-title { font-size: 18px; font-weight: 700; color: var(--heading); margin-bottom: 8px; }
+.rc-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.6; }
+.rc-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 30px; border-radius: 10px;
+  background: var(--sn-light);
+  color: var(--bg);
+  font-size: 14px; font-weight: 700;
+  text-decoration: none;
+  transition: all 0.25s;
+  box-shadow: 0 0 24px rgba(129,181,161,0.25);
+}
+.rc-btn:hover { background: var(--sn-bright); transform: translateY(-2px); box-shadow: 0 0 36px rgba(129,181,161,0.4); }
+
+/* =============================================
+   FOOTER
+============================================= */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 36px 5%;
+  display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  position: relative; z-index: 1;
+}
+.footer-brand { font-size: 18px; font-weight: 800; color: var(--heading); }
+.footer-brand span { color: var(--sn-light); }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+.footer-links a:hover { color: var(--sn-light); }
+.footer-copy { color: var(--text-muted); font-size: 13px; font-family: var(--mono); }
+
+/* =============================================
+   REVEAL ANIMATIONS
+============================================= */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* =============================================
+   TOAST
+============================================= */
+.toast {
+  position: fixed; bottom: 28px; right: 28px; z-index: 999;
+  background: var(--card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--heading);
+  box-shadow: var(--shadow);
+  transform: translateY(20px) scale(0.95);
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s var(--ease);
+}
+.toast.show { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+
+/* =============================================
+   RESPONSIVE
+============================================= */
+@media (max-width: 1024px) {
+  .hero-right { display: none; }
+}
+@media (max-width: 900px) {
+  .about-grid, .contact-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .nav-menu { display: none; }
+  .nav-ham { display: flex; }
+  .mobile-menu { display: flex; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .skills-grid { grid-template-columns: 1fr; }
+  section { padding: 72px 5%; }
+  .cursor, .cursor-ring { display: none; }
+}
+@media (max-width: 480px) {
+  .about-meta { grid-template-columns: 1fr; }
+  .certs-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Loader -->
+<div id="loader">
+  <div class="loader-logo">⚙️</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-text">LOADING PORTFOLIO...</div>
+</div>
+
+<!-- Particle Canvas -->
+<canvas id="particles"></canvas>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Copied to clipboard!</div>
+
+<!-- =============================================
+     NAVBAR
+============================================= -->
+<nav id="navbar">
+  <a href="#home" class="nav-brand">
+    <div class="nav-brand-icon">⚙️</div>
+    <div class="nav-brand-text">Ravi<span>.</span>Dev</div>
+  </a>
+
+  <ul class="nav-menu" id="navMenu">
+    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="Servicenow_Developer.pdf" class="nav-cta" target="_blank">Resume ↗</a></li>
+  </ul>
+
+  <button class="nav-ham" id="navHam" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="closeMobile()">Home</a>
+  <a href="#about" onclick="closeMobile()">About</a>
+  <a href="#skills" onclick="closeMobile()">Skills</a>
+  <a href="#projects" onclick="closeMobile()">Projects</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+  <a href="Servicenow_Developer.pdf" target="_blank" onclick="closeMobile()">Download Resume ↗</a>
+</div>
+
+<!-- =============================================
+     HERO
+============================================= -->
+<section id="home">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-content">
+    <div class="hero-status">
+      <div class="status-dot"></div>
+      AVAILABLE FOR PERMANENT HIRE
+    </div>
+
+    <h1 class="hero-name">
+      Ravi Shankar<br>
+      <span class="highlight">Gupta</span>
+    </h1>
+
+    <div class="hero-typing-wrap">
+      <span class="hero-typing-prefix">I am a </span>
+      <span class="hero-typing" id="typingText"></span>
+    </div>
+
+    <div class="hero-tags">
+      <span class="hero-tag">✦ 3.5+ Years Experience</span>
+      <span class="hero-tag">✦ ServiceNow CSA Certified</span>
+      <span class="hero-tag">✦ ITIL 4 Foundation</span>
+      <span class="hero-tag">✦ Based in Bangalore</span>
+    </div>
+
+    <p class="hero-desc">
+      Transforming IT Service Management with innovative ServiceNow solutions.
+      Specialized in ITSM automation, scripting, and enterprise integrations
+      that drive measurable improvements in process efficiency.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#projects" class="btn btn-primary">View My Work →</a>
+      <a href="#contact" class="btn btn-outline">Let's Connect</a>
+    </div>
+  </div>
+
+  <!-- Floating stats (right side) -->
+  <div class="hero-right">
+    <div class="stat-float">
+      <div class="stat-number" data-count="3">0</div>
+      <div class="stat-label">Years Exp.</div>
+    </div>
+    <div class="stat-float">
+      <div class="stat-number" data-count="6">0</div>
+      <div class="stat-label">Projects</div>
+    </div>
+    <div class="stat-float">
+      <div class="stat-number" data-count="2">0</div>
+      <div class="stat-label">Certifications</div>
+    </div>
+    <div class="stat-float">
+      <div class="stat-number" data-count="10">0</div>
+      <div class="stat-label">Skill Areas</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span class="scroll-text">SCROLL</span>
+  </div>
+</section>
+
+<!-- =============================================
+     ABOUT
+============================================= -->
+<section id="about">
+  <div class="section-label">About Me</div>
+  <h2 class="section-title">Who I Am</h2>
+
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="about-text">
+        <p>
+          I'm a <strong>ServiceNow Developer</strong> with <strong>3.5+ years of hands-on experience</strong>
+          designing, configuring, and enhancing ServiceNow ITSM applications at
+          <strong>Atos Global IT Solution Private Limited</strong>, Bangalore.
+        </p>
+        <p>
+          I specialize in creating efficient, scalable, and user-centric solutions that drive measurable
+          improvements in process efficiency and data quality. My work spans scripting (GlideAjax,
+          GlideRecord, Client Scripts, Business Rules, Script Includes), Service Catalog development,
+          REST API integrations, workflow automation, and SLA management.
+        </p>
+        <p>
+          I thrive in collaborative environments where innovative thinking meets structured delivery —
+          always focused on building solutions that make a real business impact.
+        </p>
+      </div>
+
+      <div class="about-meta">
+        <div class="meta-item">
+          <span class="meta-icon">📍</span>
+          <div><div class="meta-key">Location</div><div class="meta-val">Bangalore, India</div></div>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">📧</span>
+          <div><div class="meta-key">Email</div><div class="meta-val" style="font-size:12px">ravi365109@gmail.com</div></div>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">🎓</span>
+          <div><div class="meta-key">Education</div><div class="meta-val">B.Tech CSE, 2022</div></div>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">💼</span>
+          <div><div class="meta-key">Status</div><div class="meta-val" style="color:var(--sn-light)">Open to Work</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-sidebar reveal reveal-delay-2">
+      <div class="timeline-card">
+        <div class="tc-company">Atos Global IT Solution Pvt. Ltd.</div>
+        <div class="tc-role">ServiceNow Developer</div>
+        <div class="tc-period">SEPTEMBER 2022 — PRESENT</div>
+        <div class="tc-location">📍 Bangalore, India</div>
+      </div>
+
+      <div class="certs-grid">
+        <div class="cert-card">
+          <span class="cert-emoji">🏅</span>
+          <div class="cert-name">ServiceNow CSA</div>
+          <div class="cert-org">Certified System Admin</div>
+        </div>
+        <div class="cert-card">
+          <span class="cert-emoji">📋</span>
+          <div class="cert-name">ITIL 4 Foundation</div>
+          <div class="cert-org">IT Service Mgmt</div>
+        </div>
+        <div class="cert-card">
+          <span class="cert-emoji">🎓</span>
+          <div class="cert-name">B.Tech — CSE</div>
+          <div class="cert-org">D.I.E.T Meerut</div>
+        </div>
+        <div class="cert-card">
+          <span class="cert-emoji">⚡</span>
+          <div class="cert-name">3.5+ Years</div>
+          <div class="cert-org">ServiceNow Platform</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     SKILLS
+============================================= -->
+<section id="skills">
+  <div class="section-label">Technical Skills</div>
+  <h2 class="section-title">What I Work With</h2>
+  <p class="section-desc">My expertise across the ServiceNow platform and related technologies.</p>
+
+  <!-- Filter -->
+  <div class="skills-filter reveal">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="itsm">ITSM</button>
+    <button class="filter-btn" data-filter="scripting">Scripting</button>
+    <button class="filter-btn" data-filter="integration">Integration</button>
+    <button class="filter-btn" data-filter="tools">Tools</button>
+  </div>
+
+  <div class="skills-grid reveal">
+
+    <div class="skill-group" data-cat="itsm">
+      <div class="sg-header">
+        <div class="sg-icon">⚙️</div>
+        <div class="sg-title">ITSM Modules</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">Incident Management</span>
+        <span class="sg-pill">Problem Management</span>
+        <span class="sg-pill">Change Management</span>
+        <span class="sg-pill">Service Request</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="itsm">
+      <div class="sg-header">
+        <div class="sg-icon">🗂️</div>
+        <div class="sg-title">Service Catalog</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">Catalog Items</span>
+        <span class="sg-pill">Record Producers</span>
+        <span class="sg-pill">Variable Sets</span>
+        <span class="sg-pill">Order Guides</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="scripting">
+      <div class="sg-header">
+        <div class="sg-icon">💻</div>
+        <div class="sg-title">Server-Side Scripting</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">GlideRecord</span>
+        <span class="sg-pill">Business Rules</span>
+        <span class="sg-pill">Script Includes</span>
+        <span class="sg-pill">Scheduled Jobs</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="scripting">
+      <div class="sg-header">
+        <div class="sg-icon">🖱️</div>
+        <div class="sg-title">Client-Side Scripting</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">Client Scripts</span>
+        <span class="sg-pill">GlideAjax</span>
+        <span class="sg-pill">UI Policies</span>
+        <span class="sg-pill">UI Actions</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="scripting">
+      <div class="sg-header">
+        <div class="sg-icon">🎨</div>
+        <div class="sg-title">UI Development</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">UI Pages</span>
+        <span class="sg-pill">UI Macros</span>
+        <span class="sg-pill">Widgets</span>
+        <span class="sg-pill">Service Portal</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="integration">
+      <div class="sg-header">
+        <div class="sg-icon">🔗</div>
+        <div class="sg-title">API & Integration</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">REST API</span>
+        <span class="sg-pill">Scripted REST APIs</span>
+        <span class="sg-pill">Web Services</span>
+        <span class="sg-pill">SOAP</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="itsm">
+      <div class="sg-header">
+        <div class="sg-icon">🔄</div>
+        <div class="sg-title">Workflow & Automation</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">Flow Designer</span>
+        <span class="sg-pill">Workflow Editor</span>
+        <span class="sg-pill">SLA Management</span>
+        <span class="sg-pill">Email Notifications</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="integration">
+      <div class="sg-header">
+        <div class="sg-icon">📦</div>
+        <div class="sg-title">Data Management</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">Transform Maps</span>
+        <span class="sg-pill">Import Sets</span>
+        <span class="sg-pill">Data Policies</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="tools">
+      <div class="sg-header">
+        <div class="sg-icon">🛡️</div>
+        <div class="sg-title">Security & Access</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">Access Control Lists</span>
+        <span class="sg-pill">Role Management</span>
+        <span class="sg-pill">ATF Testing</span>
+        <span class="sg-pill">SDLC</span>
+      </div>
+    </div>
+
+    <div class="skill-group" data-cat="tools">
+      <div class="sg-header">
+        <div class="sg-icon">🛠️</div>
+        <div class="sg-title">Dev Tools</div>
+      </div>
+      <div class="sg-pills">
+        <span class="sg-pill">Git</span>
+        <span class="sg-pill">GitHub</span>
+        <span class="sg-pill">Debugging</span>
+        <span class="sg-pill">Performance Analytics</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =============================================
+     PROJECTS
+============================================= -->
+<section id="projects">
+  <div class="section-label">My Work</div>
+  <h2 class="section-title">Featured Projects</h2>
+  <p class="section-desc">Real-world ServiceNow implementations and solutions I've built.</p>
+
+  <div class="projects-grid reveal">
+
+    <a class="project-card" href="https://github.com/ravigupta5109/servicenow-itsm-scripts" target="_blank">
+      <div class="pc-num">PROJECT 01</div>
+      <div class="pc-title">ITSM Process Enhancement</div>
+      <div class="pc-desc">Enhanced core ITSM processes (Incident, Problem, Change, Service Request) using Client Scripts, Business Rules, Script Includes, UI Policies & UI Actions. Improved process reliability and reduced manual steps.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">Client Scripts</span><span class="pc-tag">Business Rules</span>
+        <span class="pc-tag">UI Policies</span><span class="pc-tag">ITSM</span>
+      </div>
+      <span class="pc-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub ↗
+      </span>
+    </a>
+
+    <a class="project-card" href="https://github.com/ravigupta5109/servicenow-catalog" target="_blank">
+      <div class="pc-num">PROJECT 02</div>
+      <div class="pc-title">Service Catalog Development</div>
+      <div class="pc-desc">Built comprehensive Service Catalog Items, Record Producers, Variables, and Order Guides. Developed responsive UI elements using GlideAjax and GlideRecord to dramatically improve end-user experience.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">Service Catalog</span><span class="pc-tag">GlideAjax</span>
+        <span class="pc-tag">Record Producers</span><span class="pc-tag">UX Design</span>
+      </div>
+      <span class="pc-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub ↗
+      </span>
+    </a>
+
+    <a class="project-card" href="https://github.com/ravigupta5109/servicenow-api-integration" target="_blank">
+      <div class="pc-num">PROJECT 03</div>
+      <div class="pc-title">API Integration Solutions</div>
+      <div class="pc-desc">Implemented REST API & Scripted API integrations for seamless data exchange between ServiceNow and external enterprise systems. Automated bulk data ingestion using Transform Maps & Import Sets.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">REST API</span><span class="pc-tag">Scripted APIs</span>
+        <span class="pc-tag">Transform Maps</span><span class="pc-tag">Integration</span>
+      </div>
+      <span class="pc-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub ↗
+      </span>
+    </a>
+
+    <a class="project-card" href="https://github.com/ravigupta5109/servicenow-workflow-automation" target="_blank">
+      <div class="pc-num">PROJECT 04</div>
+      <div class="pc-title">Workflow Automation</div>
+      <div class="pc-desc">Designed automated workflows using Flow Designer & Workflow Editor to reduce cycle times. Created email notifications, templates, reports, and dashboards for improved stakeholder communication.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">Flow Designer</span><span class="pc-tag">Workflow</span>
+        <span class="pc-tag">Automation</span><span class="pc-tag">Dashboards</span>
+      </div>
+      <span class="pc-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub ↗
+      </span>
+    </a>
+
+    <a class="project-card" href="https://github.com/ravigupta5109/servicenow-reports-dashboards" target="_blank">
+      <div class="pc-num">PROJECT 05</div>
+      <div class="pc-title">Analytics & Reporting</div>
+      <div class="pc-desc">Created custom reports and dashboards for real-time performance insights. Implemented KPI tracking and data visualisation to support data-driven decision making across IT operations.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">Reports</span><span class="pc-tag">Dashboards</span>
+        <span class="pc-tag">Analytics</span><span class="pc-tag">KPIs</span>
+      </div>
+      <span class="pc-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub ↗
+      </span>
+    </a>
+
+    <a class="project-card" href="https://github.com/ravigupta5109/servicenow-security-acl" target="_blank">
+      <div class="pc-num">PROJECT 06</div>
+      <div class="pc-title">Security & Access Management</div>
+      <div class="pc-desc">Applied Access Control Lists (ACLs) for secure access and role-based permissions. Tested configurations across DEV, QA, and PROD instances ensuring stability before every deployment.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">ACLs</span><span class="pc-tag">Security</span>
+        <span class="pc-tag">SDLC</span><span class="pc-tag">Testing</span>
+      </div>
+      <span class="pc-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub ↗
+      </span>
+    </a>
+
+  </div>
+</section>
+
+<!-- =============================================
+     CONTACT
+============================================= -->
+<section id="contact">
+  <div class="section-label">Contact</div>
+  <h2 class="section-title">Let's Work Together</h2>
+  <p class="section-desc">Open to permanent, full-time ServiceNow roles. Let's connect and discuss.</p>
+
+  <div class="contact-grid">
+
+    <div class="contact-channels reveal">
+      <a class="contact-link" href="mailto:ravi365109@gmail.com">
+        <div class="cl-icon">✉️</div>
+        <div class="cl-body">
+          <div class="cl-label">Email</div>
+          <div class="cl-value">ravi365109@gmail.com</div>
+          <div class="cl-meta">Preferred for project inquiries</div>
+        </div>
+        <span class="cl-arrow">→</span>
+      </a>
+
+      <a class="contact-link" href="tel:+919670365109">
+        <div class="cl-icon">📱</div>
+        <div class="cl-body">
+          <div class="cl-label">Phone</div>
+          <div class="cl-value">+91 9670365109</div>
+          <div class="cl-meta">Mon–Fri, 9AM–6PM IST</div>
+        </div>
+        <span class="cl-arrow">→</span>
+      </a>
+
+      <a class="contact-link" href="https://linkedin.com/in/ravigupta5109" target="_blank">
+        <div class="cl-icon">💼</div>
+        <div class="cl-body">
+          <div class="cl-label">LinkedIn</div>
+          <div class="cl-value">ravigupta5109</div>
+          <div class="cl-meta">Professional networking</div>
+        </div>
+        <span class="cl-arrow">→</span>
+      </a>
+
+      <a class="contact-link" href="https://github.com/ravi5109" target="_blank">
+        <div class="cl-icon">🐙</div>
+        <div class="cl-body">
+          <div class="cl-label">GitHub</div>
+          <div class="cl-value">ravi5109</div>
+          <div class="cl-meta">Code repositories</div>
+        </div>
+        <span class="cl-arrow">→</span>
+      </a>
+    </div>
+
+    <div class="contact-right reveal reveal-delay-2">
+      <div class="availability-card">
+        <div class="avail-head">
+          <div class="avail-pulse"></div>
+          <div class="avail-title">Open to Opportunities</div>
+        </div>
+        <div class="avail-items">
+          <div class="avail-item">
+            <div class="avail-check">✓</div>
+            <span>Permanent Employment</span>
+          </div>
+          <div class="avail-item">
+            <div class="avail-check">✓</div>
+            <span>Full-Time Positions Only</span>
+          </div>
+        </div>
+        <p class="avail-note">
+          Looking for a <strong style="color:var(--sn-light)">permanent, full-time</strong> ServiceNow Developer role where I can contribute to impactful ITSM solutions and grow with a great team.
+        </p>
+      </div>
+
+      <div class="resume-card">
+        <div class="rc-icon">📄</div>
+        <div class="rc-title">Download My Resume</div>
+        <div class="rc-sub">Complete overview of my experience, skills, certifications, and project achievements.</div>
+        <a class="rc-btn" href="Servicenow_Developer.pdf" download>
+          ↓ &nbsp;Download Resume PDF
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =============================================
+     FOOTER
+============================================= -->
+<footer>
+  <div class="footer-brand">Ravi<span>.</span>Dev</div>
+  <div class="footer-links">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 Ravi Shankar Gupta</div>
+</footer>
+
+<!-- =============================================
+     JAVASCRIPT — ALL DYNAMIC FEATURES
+============================================= -->
+<script>
+// =============================================
+// LOADER
+// =============================================
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loader');
+    loader.style.opacity = '0';
+    loader.style.transition = 'opacity 0.5s ease';
+    setTimeout(() => { loader.style.display = 'none'; }, 500);
+  }, 1800);
+});
+
+// =============================================
+// CUSTOM CURSOR
+// =============================================
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+let mx = -100, my = -100, rx = -100, ry = -100;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+// Smooth ring follow
+function animateRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cursorRing.style.left = rx + 'px';
+  cursorRing.style.top = ry + 'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+
+// Hover effect
+document.querySelectorAll('a, button, .project-card, .contact-link, .skill-group').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); cursorRing.classList.add('hover'); });
+  el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); cursorRing.classList.remove('hover'); });
+});
+
+// =============================================
+// PARTICLES BACKGROUND
+// =============================================
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 1.5 + 0.3;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.4 + 0.05;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(129, 181, 161, ${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+// Init particles
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+
+  // Draw connecting lines
+  particles.forEach((p, i) => {
+    particles.slice(i + 1).forEach(q => {
+      const dist = Math.hypot(p.x - q.x, p.y - q.y);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(q.x, q.y);
+        ctx.strokeStyle = `rgba(129, 181, 161, ${0.06 * (1 - dist / 100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    });
+  });
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// =============================================
+// TYPING EFFECT
+// =============================================
+const phrases = [
+  'ServiceNow Developer',
+  'ITSM Specialist',
+  'Automation Engineer',
+  'Integration Expert',
+  'CSA Certified Pro',
+];
+let pIdx = 0, cIdx = 0, deleting = false;
+const typingEl = document.getElementById('typingText');
+
+function type() {
+  const current = phrases[pIdx];
+  if (!deleting) {
+    typingEl.textContent = current.slice(0, ++cIdx);
+    if (cIdx === current.length) { deleting = true; setTimeout(type, 1800); return; }
+  } else {
+    typingEl.textContent = current.slice(0, --cIdx);
+    if (cIdx === 0) { deleting = false; pIdx = (pIdx + 1) % phrases.length; }
+  }
+  setTimeout(type, deleting ? 60 : 90);
+}
+setTimeout(type, 3000); // Start after loader
+
+// =============================================
+// NAVBAR SCROLL + ACTIVE LINK
+// =============================================
+const navbar = document.getElementById('navbar');
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-menu a[href^="#"]');
+
+window.addEventListener('scroll', () => {
+  // Scrolled state
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+
+  // Active link
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+
+// =============================================
+// MOBILE MENU
+// =============================================
+const ham = document.getElementById('navHam');
+const mobileMenu = document.getElementById('mobileMenu');
+
+ham.addEventListener('click', () => {
+  ham.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  mobileMenu.style.display = mobileMenu.classList.contains('open') ? 'flex' : 'none';
+});
+
+function closeMobile() {
+  ham.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  setTimeout(() => { mobileMenu.style.display = 'none'; }, 300);
+}
+
+// =============================================
+// COUNTER ANIMATION
+// =============================================
+const counters = document.querySelectorAll('[data-count]');
+const countObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = parseInt(el.dataset.count);
+    let current = 0;
+    const timer = setInterval(() => {
+      current += Math.ceil(target / 25);
+      if (current >= target) { el.textContent = target + '+'; clearInterval(timer); return; }
+      el.textContent = current;
+    }, 50);
+    countObserver.unobserve(el);
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => countObserver.observe(c));
+
+// =============================================
+// SCROLL REVEAL
+// =============================================
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => revealObserver.observe(el));
+
+// =============================================
+// SKILLS FILTER
+// =============================================
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.skill-group').forEach(sg => {
+      if (filter === 'all' || sg.dataset.cat === filter) {
+        sg.classList.remove('hidden');
+        sg.style.animation = 'fadeSlideUp 0.4s ease forwards';
+      } else {
+        sg.classList.add('hidden');
+      }
+    });
+  });
+});
+
+// =============================================
+// TOAST — Email copy on click
+// =============================================
+document.querySelector('a[href^="mailto"]').addEventListener('click', function(e) {
+  if (navigator.clipboard) {
+    e.preventDefault();
+    navigator.clipboard.writeText('ravi365109@gmail.com').then(() => {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    });
+  }
+});
+</script>
+
+</body>
+</html>
